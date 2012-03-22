@@ -3,24 +3,34 @@ BEM.DOM.decl('b-weather', {
         'js': function () {
             var offline;
             this.alert = this.findBlockInside('b-weather-alert');
+
+            //detect offline status
             window.applicationCache.addEventListener('error', function(){
                 this.alert.show('offline', true);
                 offline = true
             }.bind(this), false);
+
+            //load weather from cache
             if (this._loadFromStorage()) {
                 this._showWeather();
             }
+
+            //update when online
             if (!offline) {
                 this._update();
             }
-            setTimeout(function(){
-                window.scrollTo(0,1);
-            },1000);
         }
     },
+    /**
+     * Load Yandex Map Api
+     */
     _getYMaps: function (success) {
         jQuery.ajax({
-            url: 'http://api-maps.yandex.ru/1.1/index.xml?loadByRequire=1&key=AEIua08BAAAAIFq-XgMAgnA9HyTr5BIjD13XPvNtvhWqxMsAAAAAAAAAAACZ8reEU7VmWV-LbAEa7Lf_NOqLGg==',
+            url: 'http://api-maps.yandex.ru/1.1/index.xml',
+            data: {
+                loadByRequire: 1,
+                key: 'ADs7a08BAAAAsaISNgMAiMg_3xobt-eInWEwP1lHDcPNN08AAAAAAAAAAAALn-u0gTCqq0YutMyLcWGs5clHNg=='
+            },
             dataType: "script",
             success: function () {
               success();
