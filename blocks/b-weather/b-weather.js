@@ -20,7 +20,7 @@ BEM.DOM.decl('b-weather', {
     },
     _getYMaps: function (success) {
         jQuery.ajax({
-            url: 'http://api-maps.yandex.ru/1.1/index.xml?loadByRequire=1&key=ALrAaU8BAAAA-9tKQAUA-wywE5BVeH3R5HjBye1VpTctCZ8AAAAAAAAAAADaGYdTyWkJn3p2T-MijtMSxs07JQ==',
+            url: 'http://api-maps.yandex.ru/1.1/index.xml?loadByRequire=1&key=AEIua08BAAAAIFq-XgMAgnA9HyTr5BIjD13XPvNtvhWqxMsAAAAAAAAAAACZ8reEU7VmWV-LbAEa7Lf_NOqLGg==',
             dataType: "script",
             success: function () {
               success();
