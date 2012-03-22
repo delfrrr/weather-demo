@@ -1,25 +1,49 @@
 BEM.DOM.decl('b-weather', {
     onSetMod: {
         'js': function () {
+            var offline;
+            this.alert = this.findBlockInside('b-weather-alert');
+            window.applicationCache.addEventListener('error', function(){
+                this.alert.show('offline', true);
+                offline = true
+            }.bind(this), false);
             if (this._loadFromStorage()) {
                 this._showWeather();
-                //update later
-            } else {
-                this._update(function () {
-                    this._showWeather();
-                }.bind(this));
             }
+            if (!offline) {
+                this._update();
+            }
+            setTimeout(function(){
+                window.scrollTo(0,1);
+            },1000);
         }
     },
-    _update: function (success) {
-        this._watchLocation(function () {
-            this._geocode(function (newLocality) {
-                if (newLocality !== this._locality) {
+    _getYMaps: function (success) {
+        jQuery.ajax({
+            url: 'http://api-maps.yandex.ru/1.1/index.xml?loadByRequire=1&key=ALrAaU8BAAAA-9tKQAUA-wywE5BVeH3R5HjBye1VpTctCZ8AAAAAAAAAAADaGYdTyWkJn3p2T-MijtMSxs07JQ==',
+            dataType: "script",
+            success: function () {
+              success();
+            },
+            error: function () {
+                this.alert.show('errorYMaps', true);
+            }.bind(this)
+        });
+    },
+    _update: function () {
+        this.alert.show('update');
+        window.applicationCache.update();
+        this._getYMaps(function () {
+            this._getLocation(function () {
+                this._geocode(function (newLocality) {
+                    //FIXME maybe cache weather if this._locality == newLocality;
                     this._locality = newLocality;
                     this._updateWeather(function () {
-                        success();
-                    });
-                }
+                        //FIXME check update time;
+                        this.alert.show('updated', true);
+                        this._showWeather();
+                    }.bind(this));
+                }.bind(this));
             }.bind(this));
         }.bind(this));
     },
@@ -29,7 +53,7 @@ BEM.DOM.decl('b-weather', {
         conditionBlock.params.condition = this._weather.current_condition[0];
         conditionBlock.setMod('data', 'new');
     },
-    _locality: '',
+    _locality: null,
     _longitude: NaN,
     _latitude: NaN,
     _weather: {},
@@ -47,7 +71,7 @@ BEM.DOM.decl('b-weather', {
         localStorage.setItem('locality', this._locality);
         localStorage.setItem('weather', JSON.stringify(this._weather));
     },
-    _updateWeather: function (update) {
+    _updateWeather: function (success) {
         var _this = this;
         jQuery.ajax('http://free.worldweatheronline.com/feed/weather.ashx?callback=?', {
             dataType: 'jsonp',
@@ -58,15 +82,21 @@ BEM.DOM.decl('b-weather', {
                 key: 'b2926186a8204057122003'
             },
             success: function (data) {
-                if (data.data) {}
-                this._weather = data.data;
-                update();
-                this._saveToStorage();
+                if (data.data) {
+                    this._weather = data.data;
+                    success();
+                    this._saveToStorage();
+                } else {
+                    this._failUpdate('weatherApiDataError');
+                }
             }.bind(this),
             error: function () {
-                console.debug('weather ajax error');
-            }
+                this._failUpdate('weatherApiTimeout');
+            }.bind(this)
         })
+    },
+    _failUpdate: function (reason) {
+        this.alert.show(reason);
     },
     _geocode: function (success) {
         var geocoder;
@@ -76,12 +106,12 @@ BEM.DOM.decl('b-weather', {
                 try {
                     success(geocoder.get(0).AddressDetails.Country.Locality.LocalityName);
                 } catch (e) {
-                    console.debug('error');
+                    this._failUpdate('geocoderDataError');
                     throw e;
                 }
             });
             YMaps.Events.observe(geocoder, geocoder.Events.Fault, function (error) {
-                console.debug('geocoder.Events.Fault');
+                this._failUpdate('geocoderFault');
             });
         } else {
             YMaps.load(function () {
@@ -89,20 +119,27 @@ BEM.DOM.decl('b-weather', {
             }.bind(this))
         }
     },
-    _watchLocation: function (update) {
+    _getLocationByIp: function (success) {
+        if (YMaps.location) {
+            this._latitude = YMaps.location.latitude;
+            this._longitude = YMaps.location.longitude;
+            this._locality = YMaps.location.city;
+            success();
+        } else {
+            this._failUpdate('locationFailed');
+        }
+    },
+    _getLocation: function (success) {
         if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(function (position) {
-                if (this._latitude !== position.coords.latitude || this._longitude !== position.coords.longitude) {
-                    this._latitude  = position.coords.latitude;
-                    this._longitude = position.coords.longitude;
-                    update();
-                }
+            navigator.geolocation.getCurrentPosition(function (position) {
+                this._latitude  = position.coords.latitude;
+                this._longitude = position.coords.longitude;
+                success();
             }.bind(this), function () {
-                console.debug('error');
-            }, {
-                maximumAge: 1000*60*30,
-                timeout: 1000*60*5
-            });
+                this._getLocationByIp(success);
+            }.bind(this));
+        } else {
+            this._getLocationByIp(success);
         }
     }
 })

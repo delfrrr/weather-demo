@@ -38,8 +38,8 @@ BEM_CREATE=$(BEM) create block \
 
 .PRECIOUS: %.css
 %.css: %.deps.js
-	$(call BEM_BUILD,css)
-#	$(call BEM_BUILD,blocks/i-bem/bem/techs/css.js)
+#	$(call BEM_BUILD,css)
+	$(call BEM_BUILD,blocks/i-bem/bem/techs/css.js)
 
 .PRECIOUS: %.js
 %.js: %.deps.js

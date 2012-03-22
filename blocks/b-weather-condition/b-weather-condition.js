@@ -2,13 +2,13 @@ BEM.DOM.decl('b-weather-condition', {
     onSetMod: {
         'data': {
             'new': function () {
-                console.debug(this.params);
                 BEM.DOM.update(this.domElem, BEM.HTML.build(jQuery.extend({
                     block: 'b-weather-condition',
                     elem: 'data',
                 }, this.params, {
                     inLocality: this._localityDeclination()
                 })));
+                this.setMod('data', 'ready');
             }
         }
     },
@@ -31,7 +31,7 @@ BEM.HTML.decl('b-weather-condition', {
                 {elem: 'title', content: [
                     params.keywords['In'],
                     params.inLocality,
-                    (parseInt(params.condition.temp_C) > 0 && '&plus;')+params.condition.temp_C,
+                    (parseInt(params.condition.temp_C) > 0 && '+')+params.condition.temp_C,
                     params.keywords['celsius']
                 ].join(' ')},
                 {elem: 'subtitle', content: [
@@ -39,6 +39,10 @@ BEM.HTML.decl('b-weather-condition', {
                     params.condition.windspeedKmph,
                     params.keywords['kmph']+',',
                     params.conditionCodes[params.condition.weatherCode]
+                ].join(' ')},
+                {elem: 'update', content: [
+                    params.keywords['updated'],
+                    params.condition.observation_time,
                 ].join(' ')}
             ])
         }

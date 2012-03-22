@@ -1,0 +1,15 @@
+.b-weather
+{
+    position: absolute;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+.b-weather__content-holder
+{
+    width: 500px;
+    margin: 0 auto;
+    position: relative;
+    height: 100%;
+    min-height: 20em;
+}

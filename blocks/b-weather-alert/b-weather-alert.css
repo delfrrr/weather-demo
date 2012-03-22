@@ -1,0 +1,39 @@
+.b-weather-alert
+{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    -webkit-transition: top 1s ease-in;
+    -moz-transition: top 1s ease-in;
+    -ms-transition: top 1s ease-in;
+    -o-transition: top 1s ease-in;
+    transition: top 1s ease-in;
+}
+.b-weather-alert_visible_no
+{
+    top: -2.5em;
+}
+.b-weather-alert_visible_yes
+{
+    top: 0;
+}
+.b-weather-alert__message
+{
+    display: inline-block;
+    max-width: 400px;
+    padding: 0em 1em;
+    line-height: 2em;
+    background-color: #f2f2f2;
+    border: 1px solid #d5d5d5;
+    border-top: 0;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-radius: 0px 0px 5px 5px;
+    border-radius: 0px 0px 5px 5px;
+    -webkit-box-shadow: inset 0px -1px 1px 0px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: inset 0px -1px 1px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0px -1px 1px 0px rgba(0, 0, 0, 0.1);
+}

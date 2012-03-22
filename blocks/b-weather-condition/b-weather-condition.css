@@ -1,0 +1,26 @@
+.b-weather-condition
+{
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    text-align: center;
+}
+.b-weather-condition__data
+{
+    position: relative;
+    top: -6em;
+}
+.b-weather-condition__title
+{
+    font-size: 4em;
+}
+.b-weather-condition__subtitle
+{
+    font-size: 2em;
+    color: #666666;
+}
+.b-weather-condition__update
+{
+    line-height: 2em;
+    color: #999999;
+}
